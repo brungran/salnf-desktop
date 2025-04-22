@@ -5,8 +5,12 @@ window.electronAPI.onTest((value) => {
 </script>
 
 <template>
-    <h1>💖 Hello World!</h1>
-    <p>Aplicação desktop feita com Electron.</p>
+    <nav>
+        <RouterLink to="/">Home</RouterLink>
+        <br>
+        <RouterLink to="/empresas">Empresas</RouterLink>
+    </nav>
+    <RouterView />
 </template>
 
 <style scoped>

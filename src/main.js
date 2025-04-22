@@ -4,7 +4,15 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
 import Database from 'better-sqlite3';
+
 const db = new Database('src/database.db', { verbose: console.log });
+db.pragma('journal_mode = WAL')
+db.prepare('CREATE TABLE IF NOT EXISTS empresas (id INTEGER PRIMARY KEY, nome TEXT)').run()
+ipcMain.handle('get-empresas', () => {
+  const stmt = db.prepare('SELECT * FROM empresas')
+  const rows = stmt.all() // retorna array de objetos
+  return rows
+})
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -49,3 +57,8 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   app.quit();
 });
+
+ipcMain.on('salvar-empresa', (_event, texto) => {
+  db.prepare('INSERT INTO empresas (nome) VALUES (?)').run(texto)
+  console.log(`Empresa salva: ${texto}`)
+})
