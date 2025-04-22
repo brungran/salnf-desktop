@@ -1,11 +1,13 @@
+<script setup>
+window.electronAPI.onTest((value) => {
+    window.electronAPI.testValue(value);
+})
+</script>
+
 <template>
     <h1>💖 Hello World!</h1>
-    <p>Welcome to your Electron application.</p>
+    <p>Aplicação desktop feita com Electron.</p>
 </template>
-  
-<script setup>
-  console.log('👋 This message is being logged by "App.vue", included via Vite');
-</script>
 
 <style scoped>
     body{
