@@ -31,7 +31,8 @@
   "dependencies": {
     "better-sqlite3": "^11.9.1",
     "electron-squirrel-startup": "^1.0.1",
-    "vue": "^3.5.13"
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
   },
   "build": {
     "appId": "com.sistema-lancamentos.portable",
