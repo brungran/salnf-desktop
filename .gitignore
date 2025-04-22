@@ -1,5 +1,7 @@
 # Database
 database.db
+database.db-shm
+database.db-wal
 
 # Logs
 logs
