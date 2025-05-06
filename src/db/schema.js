@@ -3,7 +3,8 @@ export default function schema(db){
         setup(){
             db.prepare(`
                 CREATE TABLE IF NOT EXISTS empresas (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT CHECK(id > 0),
+                    cnpj INTEGER UNIQUE CHECK(LENGTH(cnpj) = 14 AND cnpj GLOB '[0-9]*'),
                     nome TEXT NOT NULL CHECK (LENGTH(TRIM(nome)) > 0),
                     vencimento TEXT DEFAULT (date('now', '+7 days')),
                     acesso TEXT,
