@@ -5,6 +5,7 @@ import { test_db } from '../db/db.js';
 import schema from '../db/schema.js';
 
 const customFaker = new Faker({ locale: [pt_BR, en] });
+const expectedObject = {changes: 1}
 
 function get_DB(){
     const db = test_db();
@@ -14,7 +15,7 @@ function get_DB(){
 
 function randomEmpresa(){
     return {
-        'id': simpleFaker.number.int(),
+        'id': simpleFaker.number.int({min: 1}),
         'cnpj': simpleFaker.string.numeric(14),
         'nome': customFaker.company.name(),
         'vencimento': customFaker.date.soon(15).toLocaleDateString('en-CA'),
@@ -23,13 +24,14 @@ function randomEmpresa(){
     }
 }
 
-// id start ///////////////////////////////////////////////////////////////////////
+// id ///////////////////////////////////////////////////////////////////////
 test.each([
     simpleFaker.string.alpha(),
     simpleFaker.number.int(10) * (-1),
     0,
     simpleFaker.number.float(),
-    "      "
+    "      ",
+    "",
 ])(`tenta inserir uma empresa com id inválido igual a %s`, (data) => {
     const emp = randomEmpresa();
     emp.id = data;
@@ -41,15 +43,14 @@ test.each([
     simpleFaker.string.numeric(),
     null,
     undefined,
-    "",
 ])('tenta inserir uma empresa com id válido igual a %s', (data) => {
     const emp = randomEmpresa();
     emp.id = data;
-    expect(() => empresa(get_DB()).insert(emp)).toBeDefined();
+    const result = empresa(get_DB()).insert(emp);
+    expect(result).toMatchObject(expectedObject);
 })
-// id end ///////////////////////////////////////////////////////////////////////
 
-// cnpj start ///////////////////////////////////////////////////////////////////////
+// cnpj ///////////////////////////////////////////////////////////////////////
 test.each([
     simpleFaker.string.alphanumeric(14),
     simpleFaker.string.numeric(13),
@@ -71,7 +72,8 @@ test.each([
 ])(`tenta inserir uma empresa com cnpj válido igual a %s`, (data) => {
     const emp = randomEmpresa();
     emp.cnpj = data;
-    expect(() => empresa(get_DB()).insert(emp)).toBeDefined();
+    const result = empresa(get_DB()).insert(emp);
+    expect(result).toMatchObject(expectedObject);
 })
 it('insere uma empresa com cnpj duplicado', () => {
     const empresa1 = randomEmpresa();
@@ -82,9 +84,8 @@ it('insere uma empresa com cnpj duplicado', () => {
     empresa(db).insert(empresa1)
     expect(() => empresa(db).insert(empresa2)).toThrowError();
 })
-// cnpj end ///////////////////////////////////////////////////////////////////////
 
-// nome start ///////////////////////////////////////////////////////////////////////
+// nome ///////////////////////////////////////////////////////////////////////
 test.each([
     "",
     "       ",
@@ -100,29 +101,92 @@ test.each([
 ])('tenta inserir uma empresa com nome válido igual a %s', (data) => {
     const emp = randomEmpresa();
     emp.nome = data;
-    expect(() => empresa(get_DB()).insert(emp)).toBeDefined();
+    const result = empresa(get_DB()).insert(emp);
+    expect(result).toMatchObject(expectedObject);
 })
-// nome end ///////////////////////////////////////////////////////////////////////
 
+// razao ///////////////////////////////////////////////////////////////////////
+test.each([
+    "",
+    "       ",
+    null,
+    undefined,
+    customFaker.company.catchPhrase()
+])('tenta inserir uma empresa com razao válida igual a %s', (data) => {
+    const emp = randomEmpresa();
+    emp.razao = data;
+    const result = empresa(get_DB()).insert(emp);
+    expect(result).toMatchObject(expectedObject);
+})
+
+// vencimento ///////////////////////////////////////////////////////////////////////
+test.only.each([
+    simpleFaker.number.int(),
+    simpleFaker.string.alphanumeric(),
+    "99/99/9999",
+    "2025/06/14",
+    "2025-06-14",
+])('tenta inserir uma empresa com vencimento inválido igual a %s', (data) => {
+    function br_date_to_sql_date(input) {
+        console.log(typeof(input))
+        if(input !== "" && input !== null && input !== undefined && typeof(input) === typeof('string') && input.includes('/')){
+            const [dia, mes, ano] = input.split('/')
+            return `${ano.padStart(4, '0')}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+        }
+    }
+    
+    const emp = randomEmpresa();
+    emp.vencimento = br_date_to_sql_date(data);
+    expect(() => empresa(get_DB()).insert(emp)).toThrowError();
+})
+test.each([
+    "",
+    "12/05/2025",
+])('tenta inserir uma empresa com vencimento válido igual a %s', (data) => {
+    function br_date_to_sql_date(input) {
+        if(input != ""){
+            const [dia, mes, ano] = input.split('/');
+            return `${ano.padStart(4, '0')}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+        }
+    }
+    
+    const emp = randomEmpresa();
+    emp.vencimento = br_date_to_sql_date(data);
+    const result = empresa(get_DB()).insert(emp);
+    expect(result).toMatchObject(expectedObject);
+})
+
+// empresa inteira ///////////////////////////////////////////////////////////////////////
 it('insere uma empresa válida', () => {
     const emp = randomEmpresa()
-    expect(empresa(get_DB()).insert(emp)).toBeDefined();
+    const result = empresa(get_DB()).insert(emp)
+    expect(result).toMatchObject(expectedObject);
 })
 
 /* 
-📌 Inserção
+📌Inserção
     📋id
         ✅Insere válido.
-        ✅Falaha ao inserir inválido.
+        ✅Falha ao inserir inválido.
     📋cnpj
         ✅Insere válido.
-        ✅Falaha ao inserir inválido.
-        ✅Falaha ao inserir duplicado.
+        ✅Falha ao inserir inválido.
+        ✅Falha ao inserir duplicado.
     📋nome
         ✅Insere válido.
-        ✅Falaha ao inserir inválido.
-
- Falha ao inserir cnpj duplicado (se tiver restrição).
+        ✅Falha ao inserir inválido.
+    📋razao
+        Insere válido.
+        Falha ao inserir inválido.
+    📋vencimento
+        Insere válido.
+        Falha ao inserir inválido.
+    📋acesso
+        Insere válido.
+        Falha ao inserir inválido.
+    📋observações
+        Insere válido.
+        Falha ao inserir inválido.
 
  Ignora campos extras não definidos no schema.
 
