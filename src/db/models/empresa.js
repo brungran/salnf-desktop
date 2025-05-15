@@ -39,7 +39,7 @@ export default function empresa(db){
     },
     
     all(){
-      return db.prepare('SELECT * FROM empresas').all();
+      return db.prepare("SELECT * FROM empresas").all();
     },
     
     select(selectFields, where) {

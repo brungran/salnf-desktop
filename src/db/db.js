@@ -5,7 +5,7 @@ function add_functions_to_db(db){
   db.function('regexp', (pattern, value) => {
       try {
           const re = new RegExp(pattern, "g");
-          if (re.test(value)) return 1;
+          return re.test(value) ? 1 : 0;
       } catch {
           return 0;
       }

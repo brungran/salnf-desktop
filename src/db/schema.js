@@ -1,16 +1,15 @@
 export default function schema(db){
     return{
         setup(){
-            // cnpj TEXT UNIQUE CHECK (LENGTH(cnpj) = 14 AND cnpj GLOB '[0-9]*'),
             db.prepare(`
                 CREATE TABLE IF NOT EXISTS empresas (
                     id INTEGER PRIMARY KEY AUTOINCREMENT CHECK(id > 0),
-                    cnpj TEXT UNIQUE NOT NULL CHECK (regexp('^[0-9]{14}$', cnpj)),
-                    nome TEXT NOT NULL CHECK (LENGTH(TRIM(nome)) > 0),
-                    razao TEXT CHECK (LENGTH(TRIM(razao)) >= 0) DEFAULT NULL,
+                    cnpj TEXT UNIQUE CHECK(cnpj IS NULL OR regexp('^[0-9]{14}$', cnpj)) DEFAULT NULL,
+                    nome TEXT NOT NULL CHECK(LENGTH(TRIM(nome)) > 0),
+                    razao TEXT CHECK(razao IS NULL OR LENGTH(TRIM(razao)) > 0) DEFAULT NULL,
                     vencimento TEXT DEFAULT (date('now', '+7 days')) CHECK (vencimento IS NULL OR is_valid_date(vencimento)),
-                    acesso TEXT,
-                    observações TEXT
+                    acesso TEXT CHECK(acesso IS NULL OR LENGTH(TRIM(acesso)) > 0) DEFAULT NULL,
+                    obs TEXT CHECK(obs IS NULL OR LENGTH(TRIM(obs)) > 0) DEFAULT NULL
                 )
             `).run();
             return true;
