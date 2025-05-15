@@ -4,32 +4,40 @@
     const nomeEmpresa = ref('')
     const empresas = ref([])
 
-    async function carregarEmpresas() {
+    /* async function carregarEmpresas() {
         empresas.value = await window.electronAPI.getEmpresas()
-    }
+    } */
     
-    async function salvar() {
+    /* async function salvar() {
         if (nomeEmpresa.value.trim()) {
             window.electronAPI.salvarEmpresa(nomeEmpresa.value)
             nomeEmpresa.value = '' // limpa input
             await carregarEmpresas()
         }
-    }
+    } */
 
-    onMounted(() => {
-        carregarEmpresas()
+    onMounted(async () => {
+      // await window.models.use((value) => console.log(value))
+      await window.models.use('empresa')
+      // await window.models.ready();
+      /* const empresa = await window.models.use('empresa');
+      console.log(empresa) */
+        // carregarEmpresas()
+        // window.models.use(function (value){console.log(value)})
+        // console.log(window.models.use((value) => value))
     })
 </script>
 
 <template>
     <label for="nomeEmpresa">Nome da empresa </label>
-    <input type="text" id="nomeEmpresa" v-model="nomeEmpresa" @keyup.enter="salvar">
+    <!-- <input type="text" id="nomeEmpresa" v-model="nomeEmpresa" @keyup.enter="salvar"> -->
+    <input type="text" id="nomeEmpresa" v-model="nomeEmpresa">
     <br>
-    <button @click="salvar">Adicionar</button>
+    <!-- <button @click="salvar">Adicionar</button> -->
 
     <div>
     <h1>Empresas</h1>
-    <table border="1">
+    <!-- <table border="1">
       <thead>
         <tr>
           <th>ID</th>
@@ -42,6 +50,6 @@
           <td>{{ empresa.nome }}</td>
         </tr>
       </tbody>
-    </table>
+    </table> -->
   </div>
 </template>

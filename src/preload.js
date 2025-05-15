@@ -1,10 +1,11 @@
-// See the Electron documentation for details on how to use preload scripts:
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
-const { contextBridge, ipcRenderer } = require('electron/renderer')
+import { contextBridge, ipcRenderer } from 'electron';
 
-contextBridge.exposeInMainWorld('electronAPI', {
-  onTest: (callback) => ipcRenderer.on('test', (_event, value) => callback(value)),
-  testValue: (value) => ipcRenderer.send('test-value', value),
-  salvarEmpresa: (texto) => ipcRenderer.send('salvar-empresa', texto),
-  getEmpresas: () => ipcRenderer.invoke('get-empresas'),
+contextBridge.exposeInMainWorld('db', {
+  empresas: {
+    all: ipcRenderer.invoke('empresa-all').then((result) => result),
+    insert: (data) => ipcRenderer.invoke('empresa-insert', data).then((result) => result),
+    select: (data, where) => ipcRenderer.invoke('empresa-select', data, where).then((result) => result),
+    remove: (where) => ipcRenderer.invoke('empresa-remove', where).then((result) => result),
+    update: (data, where) => ipcRenderer.invoke('empresa-update', data, where).then((result) => result),
+  }
 })
