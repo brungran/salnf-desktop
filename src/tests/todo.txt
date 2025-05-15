@@ -1,0 +1,43 @@
+📌 Insert
+    📋 id
+        ✅ Insere válido.
+        ✅ Falha ao inserir inválido.
+    📋 cnpj
+        ✅ Insere válido.
+        ✅ Falha ao inserir inválido.
+        ✅ Falha ao inserir duplicado.
+    📋 nome
+        ✅ Insere válido.
+        ✅ Falha ao inserir inválido.
+    📋 razao
+        ✅ Insere válido.
+        ✅ Falha ao inserir inválido.
+    📋 vencimento
+        ✅ Insere válido.
+        ✅ Falha ao inserir inválido.
+    📋 acesso
+        ✅ Insere válido.
+        ✅ Falha ao inserir inválido.
+    📋 observações
+        ✅ Insere válido.
+        ✅ Falha ao inserir inválido.
+
+    ✅ Ignora campos extras não definidos no schema.
+
+📌 Select
+    ✅ Select all
+    ✅ Select com where
+    ✅ Select com where em coluna inexistente
+    ✅ Select em coluna inexistente
+    ✅ Select vazio quando não acha o registro com os valores colocados na cláusula where
+
+📌 Update
+    Update com where
+    Update com where em coluna inexistente
+    Update em coluna inexistente
+    Update valor inválido
+
+📌 Delete
+    Delete com where
+    Delete com where em coluna inexistente
+    Delete em registro inexistente
